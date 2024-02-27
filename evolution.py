@@ -2,6 +2,9 @@ import random
 import copy
 
 # import pandas as pd
+# Toggles:
+noise = True
+
 
 # The main function in which player 1 and player 2 complete
 def main(player_1, player_2):
@@ -9,11 +12,26 @@ def main(player_1, player_2):
     player_2_moves = []
     score_1 = 0
     score_2 = 0
+    
     for l in range(1, 201):
         player_1_move = player_1(player_2_moves)
         player_2_move = player_2(player_1_moves)
         player_1_moves.append(player_1_move)
         player_2_moves.append(player_2_move)
+        if noise == True:
+            x = random.randint(0,70)
+            if x == 1:
+                y = random.randint(0,1)
+                if y == 0:
+                    if player_1_move == "defect":
+                        player_1_move = "cooperating"
+                    else:
+                        player_1_move = "defect"
+                elif y == 1:
+                    if player_2_move == "defect":
+                        player_2_move = "cooperating"
+                    else:
+                        player_2_move = "defect"
         if player_1_move == "defect" and player_2_move == "defect":
             score_1 += 1
             score_2 += 1
