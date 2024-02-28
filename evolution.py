@@ -1,9 +1,11 @@
 import random
 import copy
+import pandas as pd
 
-# import pandas as pd
 # Toggles:
 noise = True
+
+
 
 
 # The main function in which player 1 and player 2 complete
@@ -12,16 +14,16 @@ def main(player_1, player_2):
     player_2_moves = []
     score_1 = 0
     score_2 = 0
-    
-    for l in range(1, 201):
+
+    for i in range(1, 201):
         player_1_move = player_1(player_2_moves)
         player_2_move = player_2(player_1_moves)
         player_1_moves.append(player_1_move)
         player_2_moves.append(player_2_move)
-        if noise == True:
-            x = random.randint(0,70)
+        if noise:  # If noise == True
+            x = random.randint(0, 70)
             if x == 1:
-                y = random.randint(0,1)
+                y = random.randint(0, 1)
                 if y == 0:
                     if player_1_move == "defect":
                         player_1_move = "cooperating"
@@ -198,17 +200,22 @@ def nasty_not_forgiving(previous_moves):
         return "cooperating"
 
 
+# Main input
+population = {generous_tit_for_tat: 10, friedman:10 }
+num_of_evolutions = 20
 # --------- Participants End ---------
 
 # Basic Setup Starts
 list_of_players = [tit_for_tat, always_defect, friedman, joss, tester_1, generous_tit_for_tat, always_cooperate,
                    two_tits_for_tat, tit_for_two_tats, fun_random, ashwika_1, nasty_forgiving, nasty_not_forgiving]
 # list_of_participants = list_of_players
-population = {tit_for_tat: 3, always_defect: 1000}
+total_people = 0
+
 population_print = {x.__name__: population[x] for x in population}
 list_of_participants = []
 for i in population:
     for j in range(population[i]):
+        total_people +=1
         list_of_participants.append(i)
 # list_of_participants.append(tit_for_tat for i in range(0,30))
 final_scores = {}
@@ -228,11 +235,10 @@ def tournamnent():
     final_scores = dict(sorted(final_scores.items(), key=lambda x: x[1], reverse=True))
 
 
-# df = pd.DataFrame(data=final_scores)
 
 
-total_people = 158
 population_list = []
+
 
 def evolution():
     global final_scores, total_people
@@ -264,14 +270,13 @@ def evolution():
     population_print[first_key.__name__] = population_print[first_key.__name__] + num_of_people_to_add
     for i in range(0, num_of_people_to_add):
         list_of_participants.append(first_key)
-    print(population_print)
 
     final_scores = {}
     for i in range(0, len(list_of_players)):
         final_scores[list_of_players[i].__name__] = 0
 
 
-for i in range(0, 8):
+for i in range(0, num_of_evolutions):
     tournamnent()
     evolution()
 print(population_list)
