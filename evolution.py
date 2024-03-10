@@ -3,18 +3,20 @@ import random
 
 import pandas as pd
 
-from participants import always_defect, ashwika_1, nasty_forgiving, friedman, tit_for_tat, joss, list_of_players
+from participants import tit_for_tat, always_defect, friedman, joss, tester_1, generous_tit_for_tat, always_cooperate,\
+    two_tits_for_tat, tit_for_two_tats, fun_random, ashwika_1, nasty_forgiving, nasty_not_forgiving, list_of_players
 
 # Toggles:
 noise = True  # If you want a random chance that the actions are misinterpreted
 noise_intensity = 40  # 1 in (Noise_intensity) chance to do opposite
-print_result_of_each_match = False  # Activates a print statement that prints the result of each match
-do_evolution = True
+do_evolution_1 = False
+do_evolution_2 = True
 intensity = False
 # Main input
 population = {tit_for_tat: 10, always_defect: 10, joss: 10, ashwika_1: 10, nasty_forgiving: 10,
-              friedman: 10}  # The main population dictionary which stores the current populations
-num_of_evolutions = 10  # Number of evolutions you want to do
+              friedman: 10,tester_1:10,generous_tit_for_tat:10,always_cooperate:10,two_tits_for_tat:10,
+              tit_for_two_tats:10,fun_random:10,nasty_not_forgiving:10}  # The main population dictionary which stores the current populations
+num_of_evolutions = 20  # Number of evolutions you want to do
 
 
 # The main function in which player 1 and player 2 complete
@@ -55,8 +57,6 @@ def main(player_1, player_2):
         player_1_moves.append(player_1_move)
         player_2_moves.append(player_2_move)
 
-    if print_result_of_each_match:
-        print(f"{player_1.__name__} scored {score_1} and {player_2.__name__} scored {score_2}")
     final_scores[player_1.__name__] = final_scores[player_1.__name__] + score_1
     final_scores[player_2.__name__] = final_scores[player_2.__name__] + score_2
 
@@ -64,7 +64,7 @@ def main(player_1, player_2):
 # Basic Setup Starts
 
 
-population_list = []  # K
+population_list = []
 total_people = 0
 
 population_print = {x.__name__: population[x] for x in population}
@@ -142,33 +142,47 @@ def evolution_2():
     for i in population_per_capita.values():
         total_score += i
 
-    # Defining a new variable since we cant change the total amount of people before the entire code has run so it 
-    # will be changed after 
+    # Defining a new variable since we cant change the total amount of people before the entire code has run so it
+    # will be changed after
     total_population_change = 0
 
-    population_per_capita_ratio = {key: value / total_score for key, value in (population_per_capita).items()}
-    for key, value in population_per_capita_ratio.items():
-        final_p = population[key] + round((value - (1 / len(population.keys())) + 0.005) * total_people)
-        total_population_change = final_p - population[key]
+    # Defining a new variable which has the ratio of per capita income as a whole
+    population_per_capita_ratio = {player: per_capita_income / total_score for player, per_capita_income in
+                                   population_per_capita.items()}
 
-        if population[key] < 0:
-            population.pop(key)
-        elif final_p > population[key]:
-            for i in range(0, final_p - population[key]):
-                list_of_participants.append(key)
-        elif final_p < 0:
-            for i in range(0, population[key]):
-                list_of_participants.remove(key)
-            population.pop(key)
-        elif final_p < population[key]:
-            for i in range(0, population[key] - final_p):
+    for player, value in population_per_capita_ratio.items():
+        # 0 < Value < 1
+
+        # final_p can turn out to be negative
+        final_p = population[player] + round((value - (1 / len(population.keys())) + 0.005) * total_people)
+
+        total_population_change = final_p - population[player]
+
+        # If expected population is negative 1. Remove all the players. 2. Remove the key from population
+        if final_p < 0:
+            for a in range(0, population[player]):
                 try:
-                    list_of_participants.remove(key)
+                    list_of_participants.remove(player)
                 except ValueError:
-                    print("Value Error", final_p, population[key], key)
-        population[key] = final_p
-        population_print[key.__name__] = final_p
-        print(len(list_of_participants))
+                    break
+            else:
+                print("I tried to remove nothing",player.__name__,population[player])
+            population.pop(player)
+
+        # If expected population is positive 1. Add or remove required amount of players
+        elif final_p > population[player]:
+            for a in range(0, final_p - population[player]):
+                list_of_participants.append(player)
+        elif final_p < population[player]:
+            for a in range(0, population[player] - final_p):
+                list_of_participants.remove(player)
+
+        if final_p>0:
+            population[player] = final_p
+            population_print[player.__name__] = final_p
+        else:
+            population[player] = 0
+            population_print[player.__name__] = 0
         # print(key.__name__,final_p,value,value*5*(1-value)*population[key])
 
     final_scores = {}
@@ -177,17 +191,25 @@ def evolution_2():
     total_people += total_population_change
 
 
-if do_evolution:
-    for i in range(0, num_of_evolutions):
+if do_evolution_2:
+    for i in range(1, num_of_evolutions+1):
         tournament()
         evolution_2()
+        print("Evolution: ",i)
+elif do_evolution_1:
+    for i in range(1, num_of_evolutions+1):
+        tournament()
+        evolution_1()
+        print("Evolution: ",i)
 population_plot = {x.__name__: [] for x in list_of_players}
 for dict in population_list:
     for key in population_plot:
         if key in dict:
             population_plot[key].append(dict[key])
+
         else:
             population_plot[key].append(0)
+
 df = pd.DataFrame(data=population_plot)
 print(df)
 df.to_excel("population.xlsx", index=False)
