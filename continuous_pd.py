@@ -1,5 +1,5 @@
 # Import all functions from participants_2.py
-from participants_2 import tit_for_tat, always_defect, friedman, joss, tester_1, generous_tit_for_tat, always_cooperate,\
+from continuous_pd_players import tit_for_tat, always_defect, friedman, joss, tester_1, generous_tit_for_tat, always_cooperate,\
     two_tits_for_tat, tit_for_two_tats, fun_random, ashwika_1, nasty_forgiving, nasty_not_forgiving
 import pandas as pd
 
