@@ -14,12 +14,10 @@ def main(player_1, player_2):
         player_2_move = player_2(player_1_moves)
         player_1_moves.append(player_1_move)
         player_2_moves.append(player_2_move)
-        try:
-            score_1 += 5 - (player_2_move/10)
-            score_2 += 5 - (player_1_move/10)
-        except Exception as e:
-            print("I was here",e,"Player 1 move",player_1.__name__,"I moved",player_2_move)
-            pass
+        
+        score_1 += 5 - (player_2_move/10)
+        score_2 += 5 - (player_1_move/10)
+        
         if player_1_move > player_2_move:
             score_1 += 0.5
             score_2 -= 0.5
